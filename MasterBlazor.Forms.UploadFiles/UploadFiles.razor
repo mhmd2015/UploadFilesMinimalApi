@@ -1,0 +1,77 @@
+﻿@using Microsoft.AspNetCore.Components.Forms
+@using System.Net.Http.Json
+@inject HttpClient Http
+
+<InputFile OnChange="OnInputFileChange" multiple />
+<button class="btn btn-sm btn-info @((selectedFiles!=null&&selectedFiles.Count()>0?"":"hidden"))" @onclick="OnUploadFiles">Upload Files</button>
+<button class="btn btn-sm btn-success" @onclick="ListUploadFiles">Show Files</button>
+<div>@Message</div>
+
+@code {
+
+    [Parameter]
+    public EventCallback<string> OnUploaded { get; set; }
+
+    [Parameter]
+    public int BlogId { get; set; } = 1;
+
+    [Parameter]
+    //public string EndPoint { get; set; } = "/uploadfile";
+    public string EndPoint { get; set; } = "/upload";
+
+    String baseUrl = "https://localhost:7129/api/files";
+    
+
+    string Message = "No file(s) selected";
+
+    IReadOnlyList<IBrowserFile>? selectedFiles;
+
+    private void OnInputFileChange(InputFileChangeEventArgs e)
+    {
+        selectedFiles = e.GetMultipleFiles();
+        Message = $"{selectedFiles.Count} file(s) selected";
+        this.StateHasChanged();
+    }
+
+    private async void OnUploadFiles()
+    {
+        string url = baseUrl + EndPoint;
+        if (EndPoint.StartsWith("http"))
+            url = EndPoint;
+
+        foreach (var file in selectedFiles)
+        {
+            Stream stream = file.OpenReadStream();
+            MemoryStream ms = new MemoryStream();
+            await stream.CopyToAsync(ms);
+            stream.Close();
+
+            UploadedFile uploadedFile = new UploadedFile();
+            uploadedFile.FileName = file.Name;
+            uploadedFile.FileContent = ms.ToArray();
+            uploadedFile.Id = "p" + BlogId + "";
+            ms.Close();
+
+            await Http.PostAsJsonAsync<UploadedFile>(url, uploadedFile);
+        }
+        Message = $"{selectedFiles.Count} file(s) uploaded on server";
+        this.StateHasChanged();
+    }
+
+
+    private async void ListUploadFiles()
+    {
+        string url = baseUrl + "/Files/?Id=p" + BlogId;
+        var res = await Http.PostAsJsonAsync(url, "");
+        Message = await res.Content.ReadAsStringAsync();
+        this.StateHasChanged();
+    }
+
+
+    public class UploadedFile
+    {
+        public string? FileName { get; set; }
+        public byte[]? FileContent { get; set; }
+        public string Id { get; set; } = "";
+    }
+}
