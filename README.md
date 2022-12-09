@@ -9,3 +9,4 @@ Will discuss in detail with tutorial:
 * How to create [UploadFiles](https://github.com/mhmd2015/UploadFilesMinimalApi/wiki/Create-UploadFiles-Razor-Library) Razor Library with .NET 7 in Visual Studio.
 * Create [Blazor Wasm Project](https://github.com/mhmd2015/UploadFilesMinimalApi/wiki/Create-Blazor-Wasm-to-Upload-Files-to-API-Endpoint) to use the UploadFiles Lib and to Post the files to the Minimal API.
 * How to create the [Minimal API](https://github.com/mhmd2015/UploadFilesMinimalApi/wiki/Create-UploadFiles-Minimal-API) Service to handle files posts.
+* Run and fix issues [Application](https://github.com/mhmd2015/UploadFilesMinimalApi/wiki/Run-and-test-the-UploadFiles-Minimal-API-application).
